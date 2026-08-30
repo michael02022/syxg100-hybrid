@@ -22,4 +22,5 @@ add_executable(VlWorker
 target_include_directories(VlWorker PRIVATE "${UNICORN_ROOT}/include")
 target_link_libraries(VlWorker PRIVATE "${UNICORN_LIBRARY}")
 target_compile_definitions(VlWorker PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
-target_link_options(VlWorker PRIVATE -static -static-libgcc -static-libstdc++)
+target_link_options(VlWorker PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>)

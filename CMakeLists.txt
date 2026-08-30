@@ -36,7 +36,7 @@ set_target_properties(SYXG100Hybrid PROPERTIES
     PREFIX ""
 )
 target_compile_definitions(SYXG100Hybrid PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
-target_link_options(SYXG100Hybrid PRIVATE -static -static-libgcc -static-libstdc++)
+target_link_options(SYXG100Hybrid PRIVATE $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>)
 
 add_executable(SYXG100VlWorker
     NativeWorker/VlNativeWorker.cpp
@@ -51,7 +51,7 @@ set_target_properties(SYXG100VlWorker PROPERTIES
 )
 target_compile_definitions(SYXG100VlWorker PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_link_options(SYXG100VlWorker PRIVATE
-    -municode -static -static-libgcc "-static-libstdc++"
+    $<$<CXX_COMPILER_ID:GNU>:-municode;-static;-static-libgcc;-static-libstdc++>
 )
 
 add_executable(SYXG100SgWorker
@@ -67,7 +67,7 @@ set_target_properties(SYXG100SgWorker PROPERTIES
 )
 target_compile_definitions(SYXG100SgWorker PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_link_options(SYXG100SgWorker PRIVATE
-    -municode -static -static-libgcc "-static-libstdc++"
+    $<$<CXX_COMPILER_ID:GNU>:-municode;-static;-static-libgcc;-static-libstdc++>
 )
 
 add_executable(HybridHostProbe
@@ -75,7 +75,7 @@ add_executable(HybridHostProbe
     Source/Vst2Abi.h
 )
 target_compile_definitions(HybridHostProbe PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
-target_link_options(HybridHostProbe PRIVATE -static -static-libgcc -static-libstdc++)
+target_link_options(HybridHostProbe PRIVATE $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>)
 
 add_executable(HybridXgForwardingProbe
     Tests/HybridXgForwardingProbe.cpp
@@ -85,7 +85,7 @@ target_compile_definitions(HybridXgForwardingProbe PRIVATE
     WIN32_LEAN_AND_MEAN NOMINMAX
 )
 target_link_options(HybridXgForwardingProbe PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 
 add_executable(HybridDualInstanceProbe
@@ -96,7 +96,7 @@ target_compile_definitions(HybridDualInstanceProbe PRIVATE
     WIN32_LEAN_AND_MEAN NOMINMAX
 )
 target_link_options(HybridDualInstanceProbe PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 
 enable_testing()
@@ -106,7 +106,7 @@ add_executable(MidiRouterTests
     Source/MidiRouter.h
 )
 target_include_directories(MidiRouterTests PRIVATE Source)
-target_link_options(MidiRouterTests PRIVATE -static -static-libgcc -static-libstdc++)
+target_link_options(MidiRouterTests PRIVATE $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>)
 add_test(NAME MidiRouterTests COMMAND MidiRouterTests)
 
 add_executable(LeImageLoaderTests
@@ -115,7 +115,7 @@ add_executable(LeImageLoaderTests
     Source/LeImageLoader.h
 )
 target_include_directories(LeImageLoaderTests PRIVATE Source)
-target_link_options(LeImageLoaderTests PRIVATE -static -static-libgcc -static-libstdc++)
+target_link_options(LeImageLoaderTests PRIVATE $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>)
 add_test(NAME LeImageLoaderTests COMMAND LeImageLoaderTests)
 
 add_executable(VlPartRouterTests
@@ -125,7 +125,7 @@ add_executable(VlPartRouterTests
 )
 target_include_directories(VlPartRouterTests PRIVATE Source)
 target_link_options(VlPartRouterTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME VlPartRouterTests COMMAND VlPartRouterTests)
 
@@ -136,7 +136,7 @@ add_executable(SgRoutingTests
 )
 target_include_directories(SgRoutingTests PRIVATE Source)
 target_link_options(SgRoutingTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME SgRoutingTests COMMAND SgRoutingTests)
 
@@ -146,7 +146,7 @@ add_executable(NativeEventTimelineTests
 )
 target_include_directories(NativeEventTimelineTests PRIVATE Source)
 target_link_options(NativeEventTimelineTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME NativeEventTimelineTests COMMAND NativeEventTimelineTests)
 
@@ -156,7 +156,7 @@ add_executable(OrderedMidiHistoryTests
 )
 target_include_directories(OrderedMidiHistoryTests PRIVATE Source)
 target_link_options(OrderedMidiHistoryTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME OrderedMidiHistoryTests COMMAND OrderedMidiHistoryTests)
 
@@ -166,7 +166,7 @@ add_executable(MidiChannelSnapshotTests
 )
 target_include_directories(MidiChannelSnapshotTests PRIVATE Source)
 target_link_options(MidiChannelSnapshotTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME MidiChannelSnapshotTests COMMAND MidiChannelSnapshotTests)
 
@@ -176,7 +176,7 @@ add_executable(VlVoiceAllocatorTests
 )
 target_include_directories(VlVoiceAllocatorTests PRIVATE Source)
 target_link_options(VlVoiceAllocatorTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME VlVoiceAllocatorTests COMMAND VlVoiceAllocatorTests)
 
@@ -187,6 +187,6 @@ add_executable(StreamingRateAdapterTests
 )
 target_include_directories(StreamingRateAdapterTests PRIVATE Source)
 target_link_options(StreamingRateAdapterTests PRIVATE
-    -static -static-libgcc -static-libstdc++
+    $<$<CXX_COMPILER_ID:GNU>:-static;-static-libgcc;-static-libstdc++>
 )
 add_test(NAME StreamingRateAdapterTests COMMAND StreamingRateAdapterTests)

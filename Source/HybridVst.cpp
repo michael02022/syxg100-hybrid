@@ -1605,6 +1605,23 @@ float getParameter(vst2::AEffect* effect, std::int32_t index)
     return child->getParameter(child, index);
 }
 
+vst2::HostCallback realHostCallback {};
+vst2::AEffect* wrapperEffectIdentity {};
+
+// Bridges such as yabridge only recognise the AEffect* they received back
+// from VSTPluginMain (tagged internally right after that call returns); the
+// nested engine's own AEffect* is never tagged. Any host callback the child
+// makes using its own pointer therefore has to be re-issued under the
+// wrapper's identity, or the bridge hits an unrecognised-instance assertion
+// once VSTPluginMain has returned.
+vst2::IntPtr childHostCallback(vst2::AEffect*, std::int32_t opcode,
+                               std::int32_t index, vst2::IntPtr value,
+                               void* data, float opt)
+{
+    return realHostCallback(wrapperEffectIdentity, opcode, index, value, data,
+                            opt);
+}
+
 } // namespace
 
 extern "C" __declspec(dllexport) vst2::AEffect* VSTPluginMain(
@@ -1640,16 +1657,22 @@ extern "C" __declspec(dllexport) vst2::AEffect* VSTPluginMain(
     const auto workerPath = directory / L"syxg100-vl-worker.exe";
     const auto sgWorkerPath = directory / L"syxg100-sg-worker.exe";
 
-    auto* child = entry(host);
+    auto* effect = new (std::nothrow) vst2::AEffect {};
+    if (effect == nullptr) {
+        FreeLibrary(module);
+        return nullptr;
+    }
+    realHostCallback = host;
+    wrapperEffectIdentity = effect;
+    auto* child = entry(childHostCallback);
     if (child == nullptr || child->magic != vst2::effectMagic) {
+        delete effect;
         FreeLibrary(module);
         return nullptr;
     }
 
     auto* wrapperState = new (std::nothrow) WrapperState;
-    auto* effect = new (std::nothrow) vst2::AEffect {};
-    if (wrapperState == nullptr || effect == nullptr) {
-        delete wrapperState;
+    if (wrapperState == nullptr) {
         delete effect;
         child->dispatcher(child, vst2::close, 0, 0, nullptr, 0.0f);
         FreeLibrary(module);
