@@ -171,8 +171,19 @@ public:
             && context->Eip < imageBase + fpuGuardEndOffset;
         const auto ringGuard = context->Eip == imageBase + ringCliOffset
             || context->Eip == imageBase + ringStiOffset;
-        if (details->ExceptionRecord->ExceptionCode == EXCEPTION_PRIV_INSTRUCTION
-            && (inFpuGuard || ringGuard)) {
+        // Wine's is_privileged_instr() (dlls/ntdll/unix/signal_i386.c) does not
+        // recognise CLTS (0f 06), unlike CLI/STI and MOV to/from CRx. A ring-3
+        // CLTS therefore reaches us as EXCEPTION_ACCESS_VIOLATION with
+        // ExceptionInformation[1] == 0xffffffff instead of the
+        // EXCEPTION_PRIV_INSTRUCTION real Windows would raise.
+        const auto isWineUnclassifiedClts =
+            details->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION
+            && details->ExceptionRecord->NumberParameters >= 2
+            && details->ExceptionRecord->ExceptionInformation[1] == 0xffffffffu
+            && instruction[0] == 0x0f && instruction[1] == 0x06;
+        if ((details->ExceptionRecord->ExceptionCode == EXCEPTION_PRIV_INSTRUCTION
+             && (inFpuGuard || ringGuard))
+            || (isWineUnclassifiedClts && (inFpuGuard || ringGuard))) {
             if (instruction[0] == 0xfa || instruction[0] == 0xfb) {
                 ++context->Eip;
                 return EXCEPTION_CONTINUE_EXECUTION;

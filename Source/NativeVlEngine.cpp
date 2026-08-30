@@ -584,7 +584,18 @@ public:
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
         }
-        if (record->ExceptionCode != EXCEPTION_PRIV_INSTRUCTION) {
+        // Wine's is_privileged_instr() (dlls/ntdll/unix/signal_i386.c) does not
+        // recognise CLTS (0f 06), unlike CLI/STI/HLT and MOV to/from CRx/DRx.
+        // A ring-3 CLTS therefore reaches us as EXCEPTION_ACCESS_VIOLATION with
+        // ExceptionInformation[1] == 0xffffffff instead of the
+        // EXCEPTION_PRIV_INSTRUCTION real Windows would raise.
+        const auto isWineUnclassifiedPrivilegedFault =
+            record->ExceptionCode == EXCEPTION_ACCESS_VIOLATION
+            && record->NumberParameters >= 2
+            && record->ExceptionInformation[1] == 0xffffffffu
+            && instruction[0] == 0x0f && instruction[1] == 0x06;
+        if (record->ExceptionCode != EXCEPTION_PRIV_INSTRUCTION
+            && !isWineUnclassifiedPrivilegedFault) {
             logUnhandledException(*record, *context, imageBase,
                                   lastDescriptorFrames,
                                   lastTransportArguments, rendererCommand);
