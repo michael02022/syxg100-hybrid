@@ -1,5 +1,7 @@
 # S-YXG100 Hybrid
 
+## THIS IS A PATCHED VERSION SO IT CAN RUN ON YABRIDGE 5.1.1/WINE 9.21 AKA LINUX DISTROS
+
 For the user-facing overview, runtime layout, current compatibility notes, and
 real-time host instructions, see [`README.html`](README.html).
 
