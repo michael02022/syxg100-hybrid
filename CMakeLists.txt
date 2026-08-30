@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.25)
 
 project(SYXG100Hybrid VERSION 0.1.0 LANGUAGES CXX)
 
+# Statically link the MSVC CRT for both configurations so the built binaries
+# never depend on vcruntime140(d)/msvcp140(d)/ucrtbase(d).dll being present at
+# runtime -- the debug CRT DLLs in particular are Visual Studio-only and are
+# never available under Wine. No-op for non-MSVC toolchains.
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 if(NOT WIN32 OR CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "S-YXG100 Hybrid currently requires a 32-bit Windows target")
 endif()
